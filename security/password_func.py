@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.INFO)
 hasher = PasswordHasher()
 load_dotenv()
 
-SECRET_KEY = os.getenv("VERIFY_SECRET")
+SECRET_KEY = os.getenv("PASS_SECRET_KEY")
 
 
 async def password_generator(length=16, uppercase=True, digits=True, characters=False):

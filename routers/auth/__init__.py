@@ -1,1 +1,1 @@
-from .sign_up import router as sign_up_roters
+from .auth import router as auth_roters

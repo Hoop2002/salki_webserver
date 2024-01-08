@@ -11,9 +11,7 @@ from routers.auth import auth_roters
 app.include_router(auth_roters, tags=["auth"])
 
 
-
-
-# ADD SQLADMIN 
+# ADD SQLADMIN
 from sqladmin import Admin
 from database import engine
 from security import AdminAuth
@@ -29,7 +27,9 @@ from models.admins_models import (
 )
 
 back_auth = AdminAuth(secret_key="YWRtaW4=")
-admin = Admin(app, engine, authentication_backend=back_auth, base_url="/YWRtaW5fcGFuZWwK")
+admin = Admin(
+    app, engine, authentication_backend=back_auth, base_url="/YWRtaW5fcGFuZWwK"
+)
 
 admin.add_view(UserAdmin)
 admin.add_view(UserTokenAdmin)

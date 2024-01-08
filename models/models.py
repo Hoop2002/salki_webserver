@@ -21,15 +21,26 @@ class User(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(String(64), unique=True, default=user_id_generator)
     username = Column(String(128), unique=True)
+    phone = Column(String(16))
     email = Column(String(64), unique=True)
     password_hash = Column(String(2048))
     locale = Column(String(2), default="ru")
+    latitude = Column(DECIMAL)
+    longitude = Column(DECIMAL)
     verified = Column(Boolean, default=False)
     active = Column(Boolean, default=True)
     image_path = Column(String(64), default="images/users/default_icon_user.png")
     balance_coins = Column(Integer, default=0)
     balance_crystals = Column(Integer, default=0)
     create_date = Column(DateTime, default=datetime.utcnow)
+
+
+class UserStatus(Base):
+    __tablename__ = "user_status"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(32))
+    ext_id = Column(String(32), unique=True)
 
 
 class Item(Base):

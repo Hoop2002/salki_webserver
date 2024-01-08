@@ -17,7 +17,7 @@ async def user_sign_up(user_data: RequestUserSignUp, request: Request):
         )
 
     check_token = await get_admin_token_auth(token=token)
-    
+
     if not check_token:
         return HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -46,7 +46,7 @@ async def user_sign_in(user_data: RequestUserSignUp, request: Request):
         )
 
     check_token = await get_admin_token_auth(token=token)
-    
+
     if not check_token:
         return HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -65,7 +65,7 @@ async def user_sign_out(user_data: RequestUserSignUp, request: Request):
         )
 
     check_token = await get_admin_token_auth(token=token)
-    
+
     if not check_token:
         return HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

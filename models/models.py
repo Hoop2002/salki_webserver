@@ -95,6 +95,7 @@ class TokenAuth(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     token = Column(String(512), unique=True)
 
+
 class AdminPanelUser(Base):
     __tablename__ = "admin_panel_user"
 

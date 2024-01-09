@@ -2,7 +2,13 @@ from fastapi import APIRouter, HTTPException, status, Request, Depends
 from models import RequestUserSignUp, ResponseToken, RequestUserSignIn
 from .func import create_user, get_user_by_email, get_admin_token_auth
 
-from security import hash_password, verify_password, password_generator, create_user_token, get_user_via_JWT
+from security import (
+    hash_password,
+    verify_password,
+    password_generator,
+    create_user_token,
+    get_user_via_JWT,
+)
 
 router = APIRouter()
 
@@ -56,15 +62,15 @@ async def user_sign_in(user_data: RequestUserSignIn, request: Request):
         )
 
     data = user_data.model_dump()
-    user = await get_user_by_email(data['email'])
-    
+    user = await get_user_by_email(data["email"])
+
     if not user:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Неправильный email или пароль",
         )
-    
-    await verify_password(user.password_hash, password=data['password'])
+
+    await verify_password(user.password_hash, password=data["password"])
 
     token = await create_user_token(user.user_id)
 
@@ -73,7 +79,7 @@ async def user_sign_in(user_data: RequestUserSignIn, request: Request):
 
 @router.post("/api/v1/sign-out")
 async def user_sign_out(user: str = Depends(get_user_via_JWT)):
-    #TODO delete or blacklist jwt token
+    # TODO delete or blacklist jwt token
     return {"message": "Successfully logged out"}
 
 

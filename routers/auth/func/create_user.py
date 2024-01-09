@@ -9,9 +9,9 @@ async def create_user(data: dict):
         password_hash_ = await hash_password(password)
         data.update({"password_hash": password_hash_})
 
-        created_user = User(**data)    
+        created_user = User(**data)
         session.add(created_user)
-        
+
         await session.commit()
         await session.flush(created_user)
 

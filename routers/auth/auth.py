@@ -1,8 +1,8 @@
-from fastapi import APIRouter, HTTPException, status, Request
-from models import RequestUserSignUp, ResponseToken
+from fastapi import APIRouter, HTTPException, status, Request, Depends
+from models import RequestUserSignUp, ResponseToken, RequestUserSignIn
 from .func import create_user, get_user_by_email, get_admin_token_auth
 
-from security import hash_password, verify_password, password_generator
+from security import hash_password, verify_password, password_generator, create_user_token, get_user_via_JWT
 
 router = APIRouter()
 
@@ -11,64 +11,72 @@ router = APIRouter()
 async def user_sign_up(user_data: RequestUserSignUp, request: Request):
     token = request.headers.get("Authorization", False)
     if not token:
-        return HTTPException(
+        raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Token invalid",
+            detail="Token missing",
         )
 
     check_token = await get_admin_token_auth(token=token)
 
     if not check_token:
-        return HTTPException(
+        raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Token invalid",
+            detail="Wrong token",
         )
 
     data = user_data.model_dump()
     user = await get_user_by_email(data["email"])
 
     if user:
-        return HTTPException(
+        raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Пользователь с таким email уже существует",
         )
 
-    return {}
+    user_obj = await create_user(data)
+
+    return user_obj
 
 
 @router.post("/api/v1/sign-in")
-async def user_sign_in(user_data: RequestUserSignUp, request: Request):
+async def user_sign_in(user_data: RequestUserSignIn, request: Request):
     token = request.headers.get("Authorization", False)
     if not token:
-        return HTTPException(
+        raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Token invalid",
+            detail="Token missing",
         )
 
     check_token = await get_admin_token_auth(token=token)
 
     if not check_token:
-        return HTTPException(
+        raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Token invalid",
+            detail="Wrong token",
         )
-    return ResponseToken(access_token="fake")
+
+    data = user_data.model_dump()
+    user = await get_user_by_email(data['email'])
+    
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Неправильный email или пароль",
+        )
+    
+    await verify_password(user.password_hash, password=data['password'])
+
+    token = await create_user_token(user.user_id)
+
+    return ResponseToken(access_token=token)
 
 
 @router.post("/api/v1/sign-out")
-async def user_sign_out(user_data: RequestUserSignUp, request: Request):
-    token = request.headers.get("Authorization", False)
-    if not token:
-        return HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Token invalid",
-        )
+async def user_sign_out(user: str = Depends(get_user_via_JWT)):
+    #TODO delete or blacklist jwt token
+    return {"message": "Successfully logged out"}
 
-    check_token = await get_admin_token_auth(token=token)
 
-    if not check_token:
-        return HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Token invalid",
-        )
-    return ResponseToken(access_token="fake")
+@router.post("/test/test")
+async def user_test(user: str = Depends(get_user_via_JWT)):
+    return {}

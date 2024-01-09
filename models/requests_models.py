@@ -7,3 +7,7 @@ class RequestUserSignUp(BaseModel):
     email: EmailStr
     username: str
     password: str
+
+class RequestUserSignIn(BaseModel):
+    email: EmailStr
+    password: str

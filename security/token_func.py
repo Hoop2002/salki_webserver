@@ -18,7 +18,7 @@ user_oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/sign-in")
 
 async def create_user_token(user_id: str) -> str:
     expiration = datetime.utcnow() + EXPIRATION_TIME
-    
+
     data = {
         "sub": user_id,
         "exp": expiration,
@@ -29,6 +29,7 @@ async def create_user_token(user_id: str) -> str:
     token = jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM, headers=headers)
 
     return token
+
 
 async def verify_user_token(token: str = Depends(user_oauth2_scheme)) -> str:
     try:
@@ -44,16 +45,18 @@ async def verify_user_token(token: str = Depends(user_oauth2_scheme)) -> str:
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Недействительный токен"
         )
 
+
 from routers.auth.func.get_user import get_user_by_id
+
 
 async def get_user_via_JWT(token: str = Depends(user_oauth2_scheme)):
     decoded_data = await verify_user_token(token)
     if not decoded_data:
         raise HTTPException(status_code=400, detail="Invalid token")
-        
+
     user = await get_user_by_id(decoded_data["sub"])
-    
+
     if not user:
         raise HTTPException(status_code=400, detail="User not found")
-    
+
     return user

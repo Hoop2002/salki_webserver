@@ -40,18 +40,18 @@ async def verify_password(hashed_password: str, password: str) -> bool:
         return True
     except VerifyMismatchError:
         logging.warning("Пароль не совпадает с хэшем.")
-        return HTTPException(
+        raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Неверный пароль"
         )
     except InvalidHashError:
         logging.error("Пароль был неправильно сохранён в базе.")
-        return HTTPException(
+        raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Внутренняя ошибка сервера",
         )
     except VerificationError as ve:
         logging.error(f"Ошибка проверки пароля: {ve}")
-        return HTTPException(
+        raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Внутренняя ошибка сервера",
         )

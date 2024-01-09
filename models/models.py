@@ -21,7 +21,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(String(64), unique=True, default=user_id_generator)
     username = Column(String(128), unique=True)
-    phone = Column(String(16))
+    phone = Column(String(16), default="null")
     email = Column(String(64), unique=True)
     password_hash = Column(String(2048))
     locale = Column(String(2), default="ru")
